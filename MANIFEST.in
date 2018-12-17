@@ -1,0 +1,4 @@
+include README.md
+recursive-include octoprint_SlicerSettingsParser/templates *
+recursive-include octoprint_SlicerSettingsParser/translations *
+recursive-include octoprint_SlicerSettingsParser/static *
