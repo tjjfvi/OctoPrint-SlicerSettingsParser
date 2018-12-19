@@ -4,18 +4,48 @@ from __future__ import absolute_import
 import octoprint.plugin
 import octoprint.filemanager
 import shlex
+import flask
 from subprocess import Popen, PIPE
 
 
 class SlicerSettingsParserPlugin(
 	octoprint.plugin.StartupPlugin,
 	octoprint.plugin.EventHandlerPlugin,
+	octoprint.plugin.SettingsPlugin,
+	octoprint.plugin.TemplatePlugin,
+	octoprint.plugin.AssetPlugin,
+	octoprint.plugin.SimpleApiPlugin,
 ):
-	def __init__(self):
-		self._storage_interface = self._file_manager._storage("local")
+	# def initialize(self):
 
 	def on_after_startup(self):
-		self._logger.info("SlicerSettingsParser active")
+		self._storage_interface = self._file_manager._storage("local")
+		self._logger.info("SlicerSettingsParser still active")
+
+	def get_settings_defaults(self):
+		return dict(
+			sed_command="/^; .* = .*$/!d ; s/^; \\(.*\\) = \\(.*\\)/\\1=\\2/",
+		)
+
+	def get_template_configs(self):
+	    return [
+	        dict(type="settings", custom_bindings=False)
+	    ]
+
+	def get_assets(self):
+		return dict(js=["js/SlicerSettingsParser.js"])
+
+	def get_api_commands(self):
+		self._logger.info("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+		return dict(
+			analyze_all=[]
+		)
+
+	def on_api_command(self, command, data):
+		import flask
+		self._logger.info("recieveed api command: %s" % command)
+		if command == "analyze_all":
+			self._analyze_all()
 
 	def on_event(self, event, payload):
 		if event != "Upload" or payload["target"] != "local":
@@ -23,8 +53,23 @@ class SlicerSettingsParserPlugin(
 
 		self._analyze_file(payload["path"])
 
+	def _analyze_all(self):
+		process = Popen(["find"], cwd=self._storage_interface.path_on_disk(""), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+		(output, error) = process.communicate()
+
+		if error != "":
+			self._logger.error("find command errored: %s" % error)
+			return
+
+		files = list(filter(lambda f: ".gcode" in f, output.split("\n")))
+
+		for file in files:
+			self._analyze_file(file[2:])
+
 	def _analyze_file(self, path):
-		command = "sed '/^; .* = .*$/!d ; s/^; \\(.*\\) = \\(.*\\)/\\1=\\2/' %s" % self._storage_interface.path_on_disk(path)
+		self._logger.info("Analyzing file: %s" % path)
+
+		command = "sed '%s' %s" % (self._settings.get(["sed_command"]), self._storage_interface.path_on_disk(path))
 
 		self._logger.info("Running command: %s" % command);
 
@@ -68,5 +113,6 @@ class SlicerSettingsParserPlugin(
                 )
 
 __plugin_name__ = "SlicerSettingsParser"
+__plugin_identifier__ = "SlicerSettingsParser"
 __plugin_implementation__ = SlicerSettingsParserPlugin()
 

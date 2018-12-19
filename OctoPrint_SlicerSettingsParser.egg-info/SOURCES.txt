@@ -1,0 +1,13 @@
+MANIFEST.in
+README.md
+setup.py
+OctoPrint_SlicerSettingsParser.egg-info/PKG-INFO
+OctoPrint_SlicerSettingsParser.egg-info/SOURCES.txt
+OctoPrint_SlicerSettingsParser.egg-info/dependency_links.txt
+OctoPrint_SlicerSettingsParser.egg-info/entry_points.txt
+OctoPrint_SlicerSettingsParser.egg-info/not-zip-safe
+OctoPrint_SlicerSettingsParser.egg-info/requires.txt
+OctoPrint_SlicerSettingsParser.egg-info/top_level.txt
+octoprint_SlicerSettingsParser/__init__.py
+octoprint_SlicerSettingsParser/static/js/SlicerSettingsParser.js
+octoprint_SlicerSettingsParser/templates/SlicerSettingsParser_settings.jinja2

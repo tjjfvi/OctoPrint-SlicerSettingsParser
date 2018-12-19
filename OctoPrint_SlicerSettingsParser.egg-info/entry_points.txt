@@ -1,0 +1,3 @@
+[octoprint.plugin]
+SlicerSettingsParser = octoprint_SlicerSettingsParser
+

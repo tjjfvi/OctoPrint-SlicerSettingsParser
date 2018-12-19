@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: OctoPrint-SlicerSettingsParser
+Version: 0.1.0
+Summary: Plugin to analyse gcode for slicer settings comments and add additional metadata of such settings. Useless sans additional plugins to use the metadata.
+Home-page: https://github.com/tjjfvi/OctoPrint-SlicerSettingsParser
+Author: T6
+Author-email: t6@t6.fyi
+License: AGPLv3
+Description: UNKNOWN
+Platform: UNKNOWN
