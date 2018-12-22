@@ -1,6 +1,6 @@
 # OctoPrint-SlicerSettingsParser
 
-**TODO:** Describe what your plugin does.
+Analyses gcode for slicer settings comments and adds additional metadata of such settings. Useless without plugin(s) to use the metadata. 
 
 ## Setup
 
@@ -9,9 +9,26 @@ or manually using this URL:
 
     https://github.com/tjjfvi/OctoPrint-SlicerSettingsParser/archive/master.zip
 
-**TODO:** Describe how to install your plugin, if more needs to be done than just installing it via pip or through
-the plugin manager.
+You will most likely want to install another plugin to use the metadata. Such plugins of mine are:
+ - [OctoPrint-SlicerSettingsTab](https://github.com/tjjfvi/OctoPrint-SlicerSettingsTab)
 
 ## Configuration
 
-**TODO:** Describe your plugin's configuration options (if any).
+### Sed command (Advanced)
+
+This plugin uses `sed` to parse the gcode. Sed command syntax can be easily found on the web [(help)](http://lmgtfy.com/?q=sed+command+syntax). The output should be of the format:
+```
+key=value
+key2=value
+key lalalalala=value=haha
+with_newlines=abc\ndef
+```
+will be parsed as (JSON):
+```json
+{
+    "key": "value",
+    "key2": "value",
+    "key lalalalala": "value=haha",
+    "with_newlines": "abc\ndef"
+}
+```
