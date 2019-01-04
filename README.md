@@ -1,5 +1,7 @@
 # OctoPrint-SlicerSettingsParser
 
+**NOTE: Only supports Slic3r currently; suggest more in issues; contributions welcome!**
+
 Analyses gcode for slicer settings comments and adds additional metadata of such settings. Useless without plugin(s) to use the metadata. 
 
 ## Setup
