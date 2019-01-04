@@ -2,8 +2,6 @@
 
 **NOTE: Only supports Slic3r and Simplify3D currently; suggest more in issues; contributions welcome!**
 
-**See the [wiki](https://github.com/tjjfvi/OctoPrint-SlicerSettingsParser/wiki/Sed-commands) for examples of sed commands.**
-
 Analyses gcode for slicer settings comments and adds additional metadata of such settings. Useless without plugin(s) to use the metadata. 
 
 ## Setup
@@ -18,21 +16,12 @@ You will most likely want to install another plugin to use the metadata. Such pl
 
 ## Configuration
 
-### Sed command (Advanced)
+### Python regexes (Advanced)
 
-This plugin uses `sed` to parse the gcode. Sed command syntax can be easily found on the web [(help)](http://lmgtfy.com/?q=sed+command+syntax). The output should be of the format:
-```
-key=value
-key2=value
-key lalalalala=value=haha
-with_newlines=abc\ndef
-```
-will be parsed as (JSON):
-```json
-{
-    "key": "value",
-    "key2": "value",
-    "key lalalalala": "value=haha",
-    "with_newlines": "abc\ndef"
-}
-```
+This plugin uses python regexes to parse the gcode.
+Syntax can be easily found on the web.
+There should be two named capturing groups, `key` and `val`.
+Multiple regexes should be listed on seperate lines, ordered by precedence.
+Any chars are allowed in the groups; `\n` will be replaced by newlines.
+
+See the [wiki](https://github.com/tjjfvi/OctoPrint-SlicerSettingsParser/wiki/Python-regexes) for examples.
