@@ -1,6 +1,6 @@
 <form class="form-horizontal">
     <div class="control-group">
-        <button class="btn" id="SlicerSettingsParser_analyze">{{ _('Analyze all files') }}</button>
+        <button class="btn" id="SlicerSettingsParser_analyze" data-bind="click: analyzeAll">{{ _('Analyze all files') }}</button>
     </div>
     <div>
         <div>
@@ -12,14 +12,14 @@
         </div>
         <div class="show" style="display: block;">
             <div class="control-group">
-                <label class="control-label">{{ _('Sed command') }}</label>
+                <label class="control-label">{{ _('Python regexes') }}</label>
                 <div class="controls">
-                    <input
+                    <textarea
                         type="text"
                         class="input-block-level"
-                        data-bind="value: settings.plugins.SlicerSettingsParser.sed_command"
+                        data-bind="value: joinedRegexes"
                         style='font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
-                    >
+                    ></textarea>
                 </div>
             </div>
         </div>

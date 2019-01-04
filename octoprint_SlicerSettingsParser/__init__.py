@@ -3,10 +3,8 @@ from __future__ import absolute_import
 
 import octoprint.plugin
 import octoprint.filemanager
-import shlex
+import re
 import flask
-from subprocess import Popen, PIPE
-
 
 class SlicerSettingsParserPlugin(
 	octoprint.plugin.StartupPlugin,
@@ -16,34 +14,34 @@ class SlicerSettingsParserPlugin(
 	octoprint.plugin.AssetPlugin,
 	octoprint.plugin.SimpleApiPlugin,
 ):
-	# def initialize(self):
-
 	def on_after_startup(self):
 		self._storage_interface = self._file_manager._storage("local")
 		self._logger.info("SlicerSettingsParser still active")
 
 	def get_settings_defaults(self):
 		return dict(
-			sed_command="/^; .* = .*$/!d ; s/^; \\(.*\\) = \\(.*\\)/\\1=\\2/",
+			regexes=[
+				"^; (?P<key>[^,]*?) = (?P<val>.*)",
+				"^;   (?P<key>.*?),(?P<val>.*)",
+			]
 		)
 
 	def get_template_configs(self):
 	    return [
-	        dict(type="settings", custom_bindings=False)
+	        dict(type="settings", custom_bindings=True)
 	    ]
 
 	def get_assets(self):
 		return dict(js=["js/SlicerSettingsParser.js"])
 
 	def get_api_commands(self):
-		self._logger.info("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
 		return dict(
 			analyze_all=[]
 		)
 
 	def on_api_command(self, command, data):
 		import flask
-		self._logger.info("recieveed api command: %s" % command)
+		self._logger.info("received api command: %s" % command)
 		if command == "analyze_all":
 			self._analyze_all()
 
@@ -54,40 +52,38 @@ class SlicerSettingsParserPlugin(
 		self._analyze_file(payload["path"])
 
 	def _analyze_all(self):
-		process = Popen(["find"], cwd=self._storage_interface.path_on_disk(""), stdin=PIPE, stdout=PIPE, stderr=PIPE)
-		(output, error) = process.communicate()
+		def recurse(files):
+			for key in files:
+				file = files[key]
 
-		if error != "":
-			self._logger.error("find command errored: %s" % error)
-			return
+				if file["type"] == "folder":
+					recurse(file["children"])
+					continue
 
-		files = list(filter(lambda f: ".gcode" in f, output.split("\n")))
+				if file["typePath"][-1] != "gcode": continue
 
-		for file in files:
-			self._analyze_file(file[2:])
+				self._analyze_file(file["path"])
+
+
+
+		recurse(self._storage_interface.list_files())
 
 	def _analyze_file(self, path):
 		self._logger.info("Analyzing file: %s" % path)
 
-		command = "sed '%s' %s" % (self._settings.get(["sed_command"]), self._storage_interface.path_on_disk(path))
-
-		self._logger.info("Running command: %s" % command);
-
-		process = Popen(shlex.split(command), stdin=PIPE, stdout=PIPE, stderr=PIPE)
-		(output, error) = process.communicate()
-
-		if error != "":
-			self._logger.error("Command errored: %s" % error)
-			return
+		file = open(self._storage_interface.path_on_disk(path))
 
 		slicer_settings = dict()
-		lines = output.split("\n")
+		regexes = map(lambda x: re.compile(x), self._settings.get(["regexes"]))
 
-		for line in lines:
-			split_line = line.split("=")
-			key = split_line[0]
-			value = "=".join(split_line[1:])
-			slicer_settings[key] = value
+		for line in file:
+			for regex in regexes:
+				match = re.search(regex, line)
+
+				if not match: continue
+
+				key, val = match.group("key", "val")
+				slicer_settings[key] = val
 
 		self._storage_interface.set_additional_metadata(path, "slicer_settings", slicer_settings, overwrite=True)
 
@@ -122,4 +118,3 @@ def __plugin_load__():
 	__plugin_hooks__ = {
 		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
 	}
-
