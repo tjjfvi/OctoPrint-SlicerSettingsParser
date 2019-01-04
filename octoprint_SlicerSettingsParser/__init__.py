@@ -85,6 +85,8 @@ class SlicerSettingsParserPlugin(
 				key, val = match.group("key", "val")
 				slicer_settings[key] = val
 
+				break
+
 		self._storage_interface.set_additional_metadata(path, "slicer_settings", slicer_settings, overwrite=True)
 
 		self._logger.info("Saved slicer settings metadata for file: %s" % path)
