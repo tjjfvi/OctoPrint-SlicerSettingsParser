@@ -9,6 +9,4 @@ assignees: ''
 
 **Please support:** [{{name}}]({{link}})
 
-
-**Sample gcode**
-Insert a link to a gist of the gcode.
+**Sample gcode** [gist:{{id}}]({{link to gist}})
