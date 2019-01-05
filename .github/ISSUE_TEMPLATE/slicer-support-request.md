@@ -9,4 +9,4 @@ assignees: ''
 
 **Please support:** [{{name}}]({{link}})
 
-**Sample gcode** [gist:{{id}}]({{link to gist}})
+**Sample gcode**: [gist:{{id}}]({{link to gist}})
