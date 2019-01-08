@@ -1,6 +1,6 @@
 # OctoPrint-SlicerSettingsParser
 
-**NOTE: Only supports Slic3r and Simplify3D currently; suggest more in issues; contributions welcome!**
+**NOTE: Only supports Slic3r, Simplify3D, and Cura currently; suggest more in issues; contributions welcome!**
 
 Analyses gcode for slicer settings comments and adds additional metadata of such settings. Useless without plugin(s) to use the metadata. 
 
@@ -13,6 +13,10 @@ or manually using this URL:
 
 You will most likely want to install another plugin to use the metadata. Such plugins of mine are:
  - [OctoPrint-SlicerSettingsTab](https://github.com/tjjfvi/OctoPrint-SlicerSettingsTab)
+ 
+### Cura
+
+Cura doesn't natively support injecting the slicer settings into the gcode, so you must add [this](https://gist.github.com/tjjfvi/75210b2ed20ed194d6eab48bf70c4f12) to your start/end gcode.
 
 ## Configuration
 
