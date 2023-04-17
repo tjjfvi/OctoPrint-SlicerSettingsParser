@@ -86,6 +86,7 @@ class SlicerSettingsParserPlugin(
 				slicer_settings[key] = val
 
 				break
+		file.close()
 
 		self._storage_interface.set_additional_metadata(path, "slicer_settings", slicer_settings, overwrite=True)
 
